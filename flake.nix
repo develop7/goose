@@ -56,6 +56,27 @@
           }
         ) inputs.nixpkgs.legacyPackages;
 
+      # Runs the installed compiler as a user would: version reporting and one
+      # JIT-compiled program exercise stdlib and tcclib discovery in the store
+      # layout, the failure class where builds pass but the runtime is dead.
+      checks = builtins.mapAttrs (
+        system: pkgs:
+        {
+          goose =
+            pkgs.runCommand "goose-check"
+              {
+                nativeBuildInputs = [ inputs.self.packages.${system}.goose ];
+              }
+              ''
+                set -e
+                goose version
+                printf 'fn main() {\n    print("ok");\n}\n' > smoke.goose
+                [ "$(goose smoke.goose)" = ok ]
+                touch $out
+              '';
+        }
+      ) inputs.nixpkgs.legacyPackages;
+
       devShells = builtins.mapAttrs (
         system: pkgs:
         {

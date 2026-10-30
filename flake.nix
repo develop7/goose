@@ -27,11 +27,6 @@
 
               cmakeFlags = [
                 "-DGOOSE_VERSION=${finalAttrs.version}"
-                # The TinyCC runtime stage; baked into the compiler at
-                # configure time (docs/design/jit_backend.md, "Packagers can
-                # set GOOSE_TCC_LIB_PATH in CMake to their installation
-                # directory").
-                "-DGOOSE_TCC_LIB_PATH=${placeholder "out"}/tcclib"
               ];
 
               installPhase = ''

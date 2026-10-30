@@ -12,11 +12,14 @@
         builtins.mapAttrs (
           system: pkgs:
           let
+            # The untagged-build version prefix; the snapshot-<sha7> spelling
+            # is shared with the release workflow via this file.
+            prefix = pkgs.lib.removeSuffix "\n" (builtins.readFile ./snapshot-version-prefix);
             goose = pkgs.stdenv.mkDerivation (finalAttrs: {
               pname = "goose";
               # Upstream releases are CalVer tags (v2026.3); the release
               # workflow builds an untagged tree as snapshot-<sha7>.
-              version = "snapshot-${inputs.self.shortRev or "dirty"}";
+              version = "${prefix}-${inputs.self.shortRev or "dirty"}";
 
               src = inputs.self;
 

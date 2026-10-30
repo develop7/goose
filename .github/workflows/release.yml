@@ -71,7 +71,7 @@ jobs:
       - name: Name the release
         shell: bash
         run: |
-          if [ "$GITHUB_REF_TYPE" = tag ]; then version="$GITHUB_REF_NAME"; else version="snapshot-${GITHUB_SHA::7}"; fi
+          if [ "$GITHUB_REF_TYPE" = tag ]; then version="$GITHUB_REF_NAME"; else version="$(cat snapshot-version-prefix)-${GITHUB_SHA::7}"; fi
           echo "RELEASE_NAME=goose-$version-${{ matrix.platform }}" >> "$GITHUB_ENV"
           echo "GOOSE_VERSION=$version" >> "$GITHUB_ENV"
 

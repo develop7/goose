@@ -7,9 +7,14 @@
 
   outputs =
     inputs:
+    let
+      # Every system nixpkgs supports, each with its package set — the
+      # template's per-system iteration, named once for all outputs.
+      forAllSystems = f: builtins.mapAttrs f inputs.nixpkgs.legacyPackages;
+    in
     {
       packages =
-        builtins.mapAttrs (
+        forAllSystems (
           system: pkgs:
           let
             # The untagged-build version prefix; the snapshot-<sha7> spelling
@@ -18,8 +23,16 @@
             goose = pkgs.stdenv.mkDerivation (finalAttrs: {
               pname = "goose";
               # Upstream releases are CalVer tags (v2026.3); the release
-              # workflow builds an untagged tree as snapshot-<sha7>.
-              version = "${prefix}-${inputs.self.shortRev or "dirty"}";
+              # workflow builds an untagged tree as snapshot-<sha7>. A tree
+              # without a Git revision reports "unknown", as cmake/version.cmake
+              # does.
+              version =
+                if inputs.self ? shortRev then
+                  "${prefix}-${inputs.self.shortRev}"
+                else if inputs.self ? dirtyShortRev then
+                  "${prefix}-${inputs.self.dirtyShortRev}"
+                else
+                  "unknown";
 
               src = inputs.self;
 
@@ -57,12 +70,12 @@
             inherit goose;
             default = goose;
           }
-        ) inputs.nixpkgs.legacyPackages;
+        );
 
       # Runs the installed compiler as a user would: version reporting and one
       # JIT-compiled program exercise stdlib and tcclib discovery in the store
       # layout, the failure class where builds pass but the runtime is dead.
-      checks = builtins.mapAttrs (
+      checks = forAllSystems (
         system: pkgs:
         {
           goose =
@@ -78,9 +91,9 @@
                 touch $out
               '';
         }
-      ) inputs.nixpkgs.legacyPackages;
+      );
 
-      devShells = builtins.mapAttrs (
+      devShells = forAllSystems (
         system: pkgs:
         {
           default = pkgs.mkShell {
@@ -91,6 +104,6 @@
             ];
           };
         }
-      ) inputs.nixpkgs.legacyPackages;
+      );
     };
 }

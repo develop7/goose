@@ -87,7 +87,8 @@
                 set -e
                 goose version
                 printf 'fn main() {\n    print("ok");\n}\n' > smoke.goose
-                [ "$(goose smoke.goose)" = ok ]
+                out=$(goose smoke.goose)
+                [ "$out" = ok ]
                 touch $out
               '';
         }

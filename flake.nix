@@ -87,8 +87,10 @@
                 set -e
                 goose version
                 printf 'fn main() {\n    print("ok");\n}\n' > smoke.goose
-                out=$(goose smoke.goose)
-                [ "$out" = ok ]
+                # Collect the run's output without shadowing $out, which is
+                # the output path stdenv must produce.
+                got=$(goose smoke.goose)
+                [ "$got" = ok ]
                 touch $out
               '';
         }

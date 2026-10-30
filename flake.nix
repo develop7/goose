@@ -65,9 +65,8 @@
         system: pkgs:
         {
           default = pkgs.mkShell {
+            inputsFrom = [ inputs.self.packages.${system}.goose ];
             packages = [
-              pkgs.cmake
-              pkgs.ninja
               pkgs.python3
               pkgs.clang
             ];

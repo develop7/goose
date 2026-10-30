@@ -34,14 +34,9 @@
                 "-DGOOSE_TCC_LIB_PATH=${placeholder "out"}/tcclib"
               ];
 
-              # The project has no install() rules; scripts/package_release.py
-              # is upstream's release manifest. The cmake hook leaves phases in
-              # the build directory.
               installPhase = ''
                 runHook preInstall
-                install -Dm755 goose $out/bin/goose
-                cp -r tcclib $out/tcclib
-                cp -r ../stdlib $out/stdlib
+                cmake --install . --prefix "$out"
                 runHook postInstall
               '';
 

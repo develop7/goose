@@ -98,6 +98,9 @@
         {
           default = pkgs.mkShell {
             inputsFrom = [ inputs.self.packages.${system}.goose ];
+            # The test and sample runners need python3, and the suite runs
+            # under clang (ci.yml passes --require-clang); stdenv's cc covers
+            # everything else.
             packages = [
               pkgs.python3
               pkgs.clang

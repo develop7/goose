@@ -151,6 +151,12 @@ add_dependencies(goose tcc_runtime)
 set(GOOSE_TCC_LIB_PATH "${TCC_STAGE}" CACHE PATH "TinyCC's runtime directory")
 target_compile_definitions(goose PRIVATE GOOSE_TCC_LIB_PATH="${GOOSE_TCC_LIB_PATH}")
 
+# What a packager installs: the compiler beside the standard library and the
+# TinyCC runtime, as scripts/package_release.py lays out a release tarball.
+install(TARGETS goose RUNTIME DESTINATION bin)
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/stdlib" DESTINATION bin)
+install(DIRECTORY "${TCC_STAGE}" DESTINATION bin)
+
 # C headers included explicitly by a program see the same small host interface
 # as generated C. These paths precede TinyCC's own compiler headers.
 foreach(header stdint.h string.h stdlib.h math.h)
